@@ -57,11 +57,6 @@ public class NarAssemblyMojo
         throws MojoExecutionException, MojoFailureException
     {
         List narArtifacts = getNarManager().getNarDependencies( "compile" );
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> 1a7bf04a148606ab3fa759c0717a3089ae742ca8
         List dependencies = getNarManager().getAttachedNarDependencies( narArtifacts, classifiers );
 
         // this may make some extra copies...
@@ -75,20 +70,11 @@ public class NarAssemblyMojo
             // of getBaseVersion, called in pathOf.
             dependency.isSnapshot();
 
-<<<<<<< HEAD
-            File srcDir = getLayout().getNarUnpackDirectory(
-                    getUnpackDirectory(), 
-                    getNarManager().getNarFile( dependency ));
-//                File srcDir = new File( getLocalRepository().pathOf( dependency ) );
-//                srcDir = new File( getLocalRepository().getBasedir(), srcDir.getParent() );
-//                srcDir = new File( srcDir, "nar/" );
-=======
             File srcDir =
                 getLayout().getNarUnpackDirectory( getUnpackDirectory(), getNarManager().getNarFile( dependency ) );
             // File srcDir = new File( getLocalRepository().pathOf( dependency ) );
             // srcDir = new File( getLocalRepository().getBasedir(), srcDir.getParent() );
             // srcDir = new File( srcDir, "nar/" );
->>>>>>> 1a7bf04a148606ab3fa759c0717a3089ae742ca8
 
             File dstDir = getTargetDirectory();
             try
@@ -102,13 +88,8 @@ public class NarAssemblyMojo
             }
             catch ( IOException ioe )
             {
-<<<<<<< HEAD
                 throw new MojoExecutionException( "Failed to copy directory for dependency " + dependency
                     + " from " + srcDir + " to " + dstDir, ioe );
-=======
-                throw new MojoExecutionException( "Failed to copy directory for dependency " + dependency + " from "
-                    + srcDir + " to " + dstDir, ioe );
->>>>>>> 1a7bf04a148606ab3fa759c0717a3089ae742ca8
             }
         }
     }
