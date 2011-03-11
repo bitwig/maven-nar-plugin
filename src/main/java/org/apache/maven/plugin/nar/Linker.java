@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -161,12 +160,12 @@ public class Linker
         return name;
     }
 
-    public final String getName( Properties defaults, String prefix )
+    public final String getName( NarProperties properties, String prefix )
         throws MojoFailureException, MojoExecutionException
     {
-        if ( ( name == null ) && ( defaults != null ) && ( prefix != null ) )
+        if ( ( name == null ) && ( properties != null ) && ( prefix != null ) )
         {
-            name = defaults.getProperty( prefix + "linker" );
+            name = properties.getProperty( prefix + "linker" );
         }
         if ( name == null )
         {
@@ -200,10 +199,6 @@ public class Linker
             {
                 version = m.group( 0 );
             }
-            else
-            {
-                throw new MojoFailureException( "Cannot deduce version number from: " + out );
-            }
         }
         else if ( name.equals( "msvc" ) )
         {
@@ -213,10 +208,6 @@ public class Linker
             if ( m.find() )
             {
                 version = m.group( 0 );
-            }
-            else
-            {
-                throw new MojoFailureException( "Cannot deduce version number from: " + out );
             }
         }
         else if ( name.equals( "icc" ) || name.equals( "icpc" ) )
@@ -228,10 +219,6 @@ public class Linker
             {
                 version = m.group( 0 );
             }
-            else
-            {
-                throw new MojoFailureException( "Cannot deduce version number from: " + out );
-            }
         }
         else if ( name.equals( "icl" ) )
         {
@@ -242,14 +229,24 @@ public class Linker
             {
                 version = m.group( 0 );
             }
-            else
-            {
-                throw new MojoFailureException( "Cannot deduce version number from: " + out.toString() );
-            }
+        }
+        else if ( name.equals( "CC" ) )
+        {
+        	NarUtil.runCommand( "CC", new String[] { "-V" }, null, null, out, err, dbg );
+        	Pattern p = Pattern.compile( "\\d+\\.d+" );
+        	Matcher m = p.matcher( err.toString() );
+        	if ( m.find() )
+        	{ 
+        		version = m.group( 0 ); 
+        	}
         }
         else
         {
             throw new MojoFailureException( "Cannot find version number for linker '" + name + "'" );
+        }
+        
+        if (version == null) {
+        	throw new MojoFailureException( "Cannot deduce version number from: " + out.toString() );
         }
         return version;
     }
@@ -367,7 +364,7 @@ public class Linker
 
         if ( !clearDefaultOptions )
         {
-            String option = NarUtil.getDefaults().getProperty( prefix + "options" );
+            String option = NarProperties.getInstance(mojo.getMavenProject()).getProperty( prefix + "options" );
             if ( option != null )
             {
                 String[] opt = option.split( " " );
@@ -419,7 +416,7 @@ public class Linker
         else
         {
 
-            String libsList = NarUtil.getDefaults().getProperty( prefix + "libs" );
+            String libsList = NarProperties.getInstance(mojo.getMavenProject()).getProperty( prefix + "libs" );
 
             addLibraries( libsList, linker, antProject, false );
         }
@@ -447,7 +444,7 @@ public class Linker
         else
         {
 
-            String sysLibsList = NarUtil.getDefaults().getProperty( prefix + "sysLibs" );
+            String sysLibsList = NarProperties.getInstance(mojo.getMavenProject()).getProperty( prefix + "sysLibs" );
 
             addLibraries( sysLibsList, linker, antProject, true );
         }

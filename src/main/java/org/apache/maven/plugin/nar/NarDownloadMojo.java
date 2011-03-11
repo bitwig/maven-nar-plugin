@@ -22,7 +22,6 @@ package org.apache.maven.plugin.nar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -36,33 +35,8 @@ import org.apache.maven.plugin.MojoFailureException;
  * @author Mark Donszelmann
  */
 public class NarDownloadMojo
-    extends AbstractDependencyMojo
+    extends AbstractDownloadMojo
 {
-
-    /**
-     * Artifact resolver, needed to download the attached nar files.
-     * 
-     * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
-     * @required
-     * @readonly
-     */
-    private ArtifactResolver artifactResolver;
-
-    /**
-     * Remote repositories which will be searched for nar attachments.
-     * 
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @required
-     * @readonly
-     */
-    private List remoteArtifactRepositories;
-
-    /**
-     * List of classifiers which you want download. Example ppc-MacOSX-g++, x86-Windows-msvc, i386-Linux-g++.
-     * 
-     * @parameter expression=""
-     */
-    private List classifiers;
 
     public final void narExecute()
         throws MojoExecutionException, MojoFailureException

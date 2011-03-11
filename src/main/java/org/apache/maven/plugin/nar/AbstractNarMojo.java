@@ -88,6 +88,12 @@ public abstract class AbstractNarMojo
     private File outputDirectory;
 
     /**
+     * @parameter expression="${project.basedir}"
+     * @readonly
+     */
+    private File baseDir;
+
+    /**
      * @parameter expression="${project.build.finalName}"
      * @readonly
      */
@@ -95,11 +101,17 @@ public abstract class AbstractNarMojo
 
     /**
      * Target directory for Nar file construction. Defaults to "${project.build.directory}/nar" for "nar-compile" goal
-     * Defaults to "${project.build.directory}/test-nar" for "nar-testCompile" goal
      * 
      * @parameter expression=""
      */
     private File targetDirectory;
+
+    /**
+     * Target directory for Nar test construction. Defaults to "${project.build.directory}/test-nar" for "nar-testCompile" goal
+     * 
+     * @parameter expression=""
+     */
+    private File testTargetDirectory;
 
     /**
      * Target directory for Nar file unpacking. Defaults to "${targetDirectory}"
@@ -107,6 +119,13 @@ public abstract class AbstractNarMojo
      * @parameter expression=""
      */
     private File unpackDirectory;
+
+    /**
+     * Target directory for Nar test unpacking. Defaults to "${testTargetDirectory}"
+     * 
+     * @parameter expression=""
+     */
+    private File testUnpackDirectory;
 
     /**
      * Layout to be used for building and unpacking artifacts
@@ -134,7 +153,7 @@ public abstract class AbstractNarMojo
 
         architecture = NarUtil.getArchitecture( architecture );
         os = NarUtil.getOS( os );
-        aolId = NarUtil.getAOL( architecture, os, linker, aol );
+        aolId = NarUtil.getAOL(mavenProject, architecture, os, linker, aol );
         
         Model model = mavenProject.getModel();
         Properties properties = model.getProperties();
@@ -149,10 +168,18 @@ public abstract class AbstractNarMojo
         {
             targetDirectory = new File( mavenProject.getBuild().getDirectory(), "nar" );
         }
+        if ( testTargetDirectory == null )
+        {
+            testTargetDirectory = new File( mavenProject.getBuild().getDirectory(), "test-nar" );
+        }
 
         if ( unpackDirectory == null )
         {
             unpackDirectory = targetDirectory;
+        }
+        if ( testUnpackDirectory == null )
+        {
+            testUnpackDirectory = testTargetDirectory;
         }
     }
 
@@ -176,6 +203,11 @@ public abstract class AbstractNarMojo
     {
         return linker;
     }
+    
+    protected final File getBasedir()
+    {
+    	return baseDir;
+    }
 
     protected final File getOutputDirectory()
     {
@@ -191,10 +223,18 @@ public abstract class AbstractNarMojo
     {
         return targetDirectory;
     }
+    protected final File getTestTargetDirectory()
+    {
+        return testTargetDirectory;
+    }
 
     protected final File getUnpackDirectory()
     {
         return unpackDirectory;
+    }
+    protected final File getTestUnpackDirectory()
+    {
+        return testUnpackDirectory;
     }
 
     protected final NarLayout getLayout()

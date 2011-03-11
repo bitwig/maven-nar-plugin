@@ -20,6 +20,7 @@
 package org.apache.maven.plugin.nar.test;
 
 import org.apache.maven.plugin.nar.Linker;
+import org.apache.maven.plugin.nar.NarProperties;
 import org.apache.maven.plugin.nar.NarUtil;
 
 import junit.framework.Assert;
@@ -44,8 +45,8 @@ public class TestLinkerVersion
         super.setUp();
         String architecture = System.getProperty( "os.arch" );
         linker = new Linker();
-        String name =
-            linker.getName( NarUtil.getDefaults(), NarUtil.getArchitecture( architecture ) + "." + NarUtil.getOS( null )
+//        String name =
+            linker.getName( NarProperties.getInstance(null), NarUtil.getArchitecture( architecture ) + "." + NarUtil.getOS( null )
                 + "." );
     }
 

@@ -35,7 +35,8 @@
           </generate-resources>
           <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources,
             org.apache.maven.plugins:maven-nar-plugin:nar-resources,
-            org.apache.maven.plugins:maven-nar-plugin:nar-gnu-resources
+            org.apache.maven.plugins:maven-nar-plugin:nar-gnu-resources,
+            org.apache.maven.plugins:maven-nar-plugin:nar-vcproj
           </process-resources>
           <compile>org.apache.maven.plugins:maven-compiler-plugin:compile,
             org.apache.maven.plugins:maven-nar-plugin:nar-javah,
@@ -44,8 +45,8 @@
           </compile>
           <process-classes>org.apache.maven.plugins:maven-nar-plugin:nar-gnu-process
           </process-classes>
-          <generate-test-sources></generate-test-sources>
-          <process-test-sources></process-test-sources>
+          <generate-test-sources>org.apache.maven.plugins:maven-nar-plugin:nar-testDownload</generate-test-sources>
+          <process-test-sources>org.apache.maven.plugins:maven-nar-plugin:nar-testUnpack</process-test-sources>
           <generate-test-resources></generate-test-resources>
           <process-test-resources>org.apache.maven.plugins:maven-resources-plugin:testResources
           </process-test-resources>
