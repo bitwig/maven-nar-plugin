@@ -250,7 +250,7 @@ public abstract class Compiler
         // adjust default values
         if ( name == null )
         {
-            name = NarUtil.getDefaults().getProperty( getPrefix() + "compiler" );
+            name = NarProperties.getInstance(mojo.getMavenProject()).getProperty( getPrefix() + "compiler" );
         }
         return name;
     }
@@ -334,7 +334,11 @@ public abstract class Compiler
             includeList = new ArrayList();
             for ( Iterator i = getSourceDirectories( type ).iterator(); i.hasNext(); )
             {
-                includeList.add( new File( (File) i.next(), "include" ).getPath() );
+		//VR 20100318 only add include directories that exist - we now fail the build fast if an include directory does not exist 
+                File includePath = new File( (File) i.next(), "include" );
+                if(includePath.isDirectory()) {
+                	includeList.add( includePath.getPath() );
+                }
             }
         }
         return includeList;
@@ -356,7 +360,7 @@ public abstract class Compiler
         }
         else
         {
-            String defaultIncludes = NarUtil.getDefaults().getProperty( getPrefix() + "includes" );
+            String defaultIncludes = NarProperties.getInstance(mojo.getMavenProject()).getProperty( getPrefix() + "includes" );
             if ( defaultIncludes != null )
             {
                 String[] include = defaultIncludes.split( " " );
@@ -377,7 +381,7 @@ public abstract class Compiler
         // add all excludes
         if ( excludes.isEmpty() )
         {
-            String defaultExcludes = NarUtil.getDefaults().getProperty( getPrefix() + "excludes" );
+            String defaultExcludes = NarProperties.getInstance(mojo.getMavenProject()).getProperty( getPrefix() + "excludes" );
             if ( defaultExcludes != null )
             {
                 String[] exclude = defaultExcludes.split( " " );
@@ -452,7 +456,7 @@ public abstract class Compiler
 
         if ( !clearDefaultOptions )
         {
-            String optionsProperty = NarUtil.getDefaults().getProperty( getPrefix() + "options" );
+            String optionsProperty = NarProperties.getInstance(mojo.getMavenProject()).getProperty( getPrefix() + "options" );
             if ( optionsProperty != null )
             {
                 String[] option = optionsProperty.split( " " );
@@ -504,7 +508,7 @@ public abstract class Compiler
         if ( !clearDefaultDefines )
         {
             DefineSet ds = new DefineSet();
-            String defaultDefines = NarUtil.getDefaults().getProperty( getPrefix() + "defines" );
+            String defaultDefines = NarProperties.getInstance(mojo.getMavenProject()).getProperty( getPrefix() + "defines" );
             if ( defaultDefines != null )
             {
                 ds.setDefine( new CUtil.StringArrayBuilder( defaultDefines ) );
@@ -551,7 +555,7 @@ public abstract class Compiler
         if ( !clearDefaultUndefines )
         {
             DefineSet us = new DefineSet();
-            String defaultUndefines = NarUtil.getDefaults().getProperty( getPrefix() + "undefines" );
+            String defaultUndefines = NarProperties.getInstance(mojo.getMavenProject()).getProperty( getPrefix() + "undefines" );
             if ( defaultUndefines != null )
             {
                 us.setUndefine( new CUtil.StringArrayBuilder( defaultUndefines ) );
@@ -563,6 +567,10 @@ public abstract class Compiler
         for ( Iterator i = getIncludePaths( type ).iterator(); i.hasNext(); )
         {
             String path = (String) i.next();
+            // Darren Sargent, 30Jan2008 - fail build if invalid include path(s) specified.
+			if ( ! new File(path).exists() ) {
+				throw new MojoFailureException("NAR: Include path not found: " + path);
+			}
             compiler.createIncludePath().setPath( path );
         }
 
@@ -608,25 +616,6 @@ public abstract class Compiler
                 fileSet.setExcludes( StringUtils.join( excludeSet.iterator(), "," ) );
                 fileSet.setDir( srcDir );
                 compiler.addFileset( fileSet );
-            }
-        }
-
-        // add other sources, FIXME seems
-        if ( !type.equals( TEST ) )
-        {
-            for ( Iterator i = mojo.getMavenProject().getCompileSourceRoots().iterator(); i.hasNext(); )
-            {
-                File dir = new File( (String) i.next() );
-                mojo.getLog().debug( "Checking for existence of " + getLanguage() + " sourceCompileRoot: " + dir );
-                if ( dir.exists() )
-                {
-                    ConditionalFileSet otherFileSet = new ConditionalFileSet();
-                    otherFileSet.setProject( mojo.getAntProject() );
-                    otherFileSet.setIncludes( StringUtils.join( includeSet.iterator(), "," ) );
-                    otherFileSet.setExcludes( StringUtils.join( excludeSet.iterator(), "," ) );
-                    otherFileSet.setDir( dir );
-                    compiler.addFileset( otherFileSet );
-                }
             }
         }
 

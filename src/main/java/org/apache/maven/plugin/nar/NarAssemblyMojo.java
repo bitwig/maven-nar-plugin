@@ -48,7 +48,7 @@ public class NarAssemblyMojo
      * 
      * @parameter
      */
-    private List classifiers = null;
+    private String[] classifiers = null;
 
     /**
      * Copies the unpacked nar libraries and files into the projects target area

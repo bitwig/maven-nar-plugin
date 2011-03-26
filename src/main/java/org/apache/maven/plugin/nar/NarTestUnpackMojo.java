@@ -29,29 +29,30 @@ import org.apache.maven.plugin.MojoFailureException;
  * Unpacks NAR files. Unpacking happens in the local repository, and also sets flags on binaries and corrects static
  * libraries.
  * 
- * @goal nar-unpack
- * @phase process-sources
+ * @goal nar-testUnpack
+ * @phase process-test-sources
  * @requiresProject
- * @requiresDependencyResolution
+ * @requiresDependencyResolution test
  * @author Mark Donszelmann
  */
-public class NarUnpackMojo
+public class NarTestUnpackMojo
     extends AbstractUnpackMojo
 {
 
     public final void narExecute()
         throws MojoExecutionException, MojoFailureException
     {
-        List narArtifacts = getNarManager().getNarDependencies( "compile" );
+        NarManager mgr = getNarManager();
+        List narArtifacts = mgr.getNarDependencies( "test" );
         if ( classifiers == null )
         {
-            getNarManager().unpackAttachedNars( narArtifacts, archiverManager, null, getOS(), getLayout(), getUnpackDirectory() );
+            mgr.unpackAttachedNars( narArtifacts, archiverManager, null, getOS(), getLayout(), getTestUnpackDirectory() );
         }
         else
         {
             for ( Iterator j = classifiers.iterator(); j.hasNext(); )
             {
-                getNarManager().unpackAttachedNars( narArtifacts, archiverManager, (String) j.next(), getOS(), getLayout(), getUnpackDirectory() );
+                mgr.unpackAttachedNars( narArtifacts, archiverManager, (String) j.next(), getOS(), getLayout(), getTestUnpackDirectory() );
             }
         }
     }

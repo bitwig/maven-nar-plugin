@@ -26,32 +26,32 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * Unpacks NAR files. Unpacking happens in the local repository, and also sets flags on binaries and corrects static
- * libraries.
+ * Downloads any dependent NAR files. This includes the noarch and aol type NAR files.
  * 
- * @goal nar-unpack
- * @phase process-sources
+ * @goal nar-testDownload
+ * @phase generate-test-sources
  * @requiresProject
- * @requiresDependencyResolution
+ * @requiresDependencyResolution test
  * @author Mark Donszelmann
  */
-public class NarUnpackMojo
-    extends AbstractUnpackMojo
+public class NarTestDownloadMojo
+    extends AbstractDownloadMojo
 {
 
     public final void narExecute()
         throws MojoExecutionException, MojoFailureException
     {
-        List narArtifacts = getNarManager().getNarDependencies( "compile" );
+        List narArtifacts = getNarManager().getNarDependencies( "test" );
         if ( classifiers == null )
         {
-            getNarManager().unpackAttachedNars( narArtifacts, archiverManager, null, getOS(), getLayout(), getUnpackDirectory() );
+            getNarManager().downloadAttachedNars( narArtifacts, remoteArtifactRepositories, artifactResolver, null );
         }
         else
         {
             for ( Iterator j = classifiers.iterator(); j.hasNext(); )
             {
-                getNarManager().unpackAttachedNars( narArtifacts, archiverManager, (String) j.next(), getOS(), getLayout(), getUnpackDirectory() );
+                getNarManager().downloadAttachedNars( narArtifacts, remoteArtifactRepositories, artifactResolver,
+                                                      (String) j.next() );
             }
         }
     }
