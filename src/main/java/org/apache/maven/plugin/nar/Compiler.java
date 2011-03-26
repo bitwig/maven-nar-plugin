@@ -220,12 +220,20 @@ public abstract class Compiler
      */
     private boolean clearDefaultOptions;
 
-    /**
-     * Comma separated list of filenames to compile in order
-     * 
-     * @parameter expression=""
-     */
-    private String compileOrder;
+   /**
+    * Comma separated list of filenames to compile in order
+    *
+    * @parameter expression=""
+    */
+   private String compileOrder;
+
+   /**
+    * Sets a file to precompile.
+    * Should be a source file that includes only one unguarded header file. Default value is "stdafx.cpp".
+    *
+    * @parameter expression=""
+    */
+   private String preCompile;
 
     private AbstractCompileMojo mojo;
 
@@ -621,6 +629,22 @@ public abstract class Compiler
                 }
             }
         }
+
+        if ( preCompile != null && !preCompile.isEmpty() )
+        {
+           final File prototype = new File(preCompile);
+           mojo.getLog().debug( "Checking for existence of precompilation prototype: " + prototype );
+
+           if (prototype.exists())
+           {
+              compiler.createPrecompile().setPrototype(prototype);
+           }
+           else
+           {
+              mojo.getLog().warn("Skipping precompilation because the prototype could not be found.");
+           }
+        }
+       
         return compiler;
     }
 
