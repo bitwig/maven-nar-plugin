@@ -84,8 +84,7 @@ public class NarTestMojo
                 return;
             }
             
-            File workingDir = new File( getTestTargetDirectory(), "test-reports" );
-            workingDir.mkdirs();
+            File workingDir = getBasedir();
             getLog().info( "Running test " + name + " in " + workingDir );
 
             List args = test.getArgs();
