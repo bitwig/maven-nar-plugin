@@ -27,13 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.sf.antcontrib.cpptasks.CCTask;
-import net.sf.antcontrib.cpptasks.CUtil;
-import net.sf.antcontrib.cpptasks.CompilerDef;
-import net.sf.antcontrib.cpptasks.LinkerDef;
-import net.sf.antcontrib.cpptasks.OutputTypeEnum;
-import net.sf.antcontrib.cpptasks.RuntimeType;
-import net.sf.antcontrib.cpptasks.SubsystemEnum;
+import net.sf.antcontrib.cpptasks.*;
+import net.sf.antcontrib.cpptasks.compiler.Processor;
 import net.sf.antcontrib.cpptasks.types.LibrarySet;
 import net.sf.antcontrib.cpptasks.types.LinkerArgument;
 import net.sf.antcontrib.cpptasks.types.SystemLibrarySet;
@@ -43,6 +38,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -206,6 +202,26 @@ public class NarCompileMojo
         RuntimeType runtimeType = new RuntimeType();
         runtimeType.setValue(getRuntime(getAOL()));
         task.setRuntime(runtimeType);
+
+        // add precompilation prototype
+        final String precompilationPrototype = getPreCompilationPrototype();
+        if ( precompilationPrototype != null && !precompilationPrototype.isEmpty() )
+        {
+           final File prototype = new File(precompilationPrototype);
+           getLog().debug( "Checking for existence of precompilation prototype: " + prototype );
+
+           if (prototype.exists())
+           {
+               getAntProject().setUserProperty(PRECOMPILE_PROPERTY_NAME, "JFDI" );
+               final PrecompileDef precompileDef = task.createPrecompile();
+               precompileDef.setIf(PRECOMPILE_PROPERTY_NAME);
+               precompileDef.setPrototype(prototype);
+           }
+           else
+           {
+              getLog().warn("Skipping precompilation because the prototype could not be found.");
+           }
+        }
 
         // Darren Sargent Feb 11 2010: Use Compiler.MAIN for "type"...appears the wrong "type" variable was being used
         // since getCompiler() expects "main" or "test", whereas the "type" variable here is "executable", "shared" etc.

@@ -129,6 +129,16 @@ public abstract class AbstractCompileMojo
      */
     private Java java;
 
+   /**
+    * Sets a file to precompile.
+    * Should be a source file that includes only one unguarded header file. Default value is "stdafx.cpp".
+    *
+    * @parameter expression=""
+    */
+    private String preCompile;
+
+    final public static String PRECOMPILE_PROPERTY_NAME = "precompile";
+
     private NarInfo narInfo;
 
     private List/* <String> */dependencyLibOrder;
@@ -260,6 +270,11 @@ public abstract class AbstractCompileMojo
     protected final List/* <String> */getDependencyLibOrder()
     {
         return dependencyLibOrder;
+    }
+
+    public final String getPreCompilationPrototype()
+    {
+        return preCompile;
     }
 
     protected final NarInfo getNarInfo()

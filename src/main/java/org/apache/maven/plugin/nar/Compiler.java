@@ -28,10 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.antcontrib.cpptasks.CUtil;
-import net.sf.antcontrib.cpptasks.CompilerDef;
-import net.sf.antcontrib.cpptasks.CompilerEnum;
-import net.sf.antcontrib.cpptasks.OptimizationEnum;
+import net.sf.antcontrib.cpptasks.*;
 import net.sf.antcontrib.cpptasks.types.CompilerArgument;
 import net.sf.antcontrib.cpptasks.types.ConditionalFileSet;
 import net.sf.antcontrib.cpptasks.types.DefineArgument;
@@ -233,7 +230,7 @@ public abstract class Compiler
     *
     * @parameter expression=""
     */
-   private String preCompile;
+    private String preCompile;
 
     private AbstractCompileMojo mojo;
 
@@ -584,6 +581,25 @@ public abstract class Compiler
             }
         }
 
+        // add precompilation prototype
+        if ( preCompile != null && !preCompile.isEmpty() )
+        {
+           final File prototype = new File(preCompile);
+           mojo.getLog().debug( "Checking for existence of precompilation prototype: " + prototype );
+
+           if (prototype.exists())
+           {
+               mojo.getAntProject().setUserProperty(AbstractCompileMojo.PRECOMPILE_PROPERTY_NAME, "JFDI" );
+               final PrecompileDef precompileDef = compiler.createPrecompile();
+               precompileDef.setIf(AbstractCompileMojo.PRECOMPILE_PROPERTY_NAME);
+               precompileDef.setPrototype(prototype);
+           }
+           else
+           {
+              mojo.getLog().warn("Skipping precompilation because the prototype could not be found.");
+           }
+        }
+
         // Add default fileset (if exists)
         List srcDirs = getSourceDirectories( type );
         Set includeSet = getIncludes();
@@ -619,21 +635,6 @@ public abstract class Compiler
             }
         }
 
-        if ( preCompile != null && !preCompile.isEmpty() )
-        {
-           final File prototype = new File(preCompile);
-           mojo.getLog().debug( "Checking for existence of precompilation prototype: " + prototype );
-
-           if (prototype.exists())
-           {
-              compiler.createPrecompile().setPrototype(prototype);
-           }
-           else
-           {
-              mojo.getLog().warn("Skipping precompilation because the prototype could not be found.");
-           }
-        }
-       
         return compiler;
     }
 
