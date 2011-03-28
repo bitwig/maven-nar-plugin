@@ -189,10 +189,7 @@ public class NarCompileMojo
         task.setOutfile(outFile);
 
         // object directory
-        File objDir = new File(getTargetDirectory(), "obj");
-        objDir = new File(objDir, getAOL().toString());
-        objDir.mkdirs();
-        task.setObjdir(objDir);
+        task.setObjdir(getObjDir());
 
         // failOnError, libtool
         task.setFailonerror(failOnError(getAOL()));

@@ -230,7 +230,7 @@ public abstract class Compiler
     *
     * @parameter expression=""
     */
-    private String preCompile;
+    private String precompile;
 
     private AbstractCompileMojo mojo;
 
@@ -582,9 +582,9 @@ public abstract class Compiler
         }
 
         // add precompilation prototype
-        if ( preCompile != null && !preCompile.isEmpty() )
+        if ( precompile != null && !precompile.isEmpty() )
         {
-           final File prototype = new File(preCompile);
+           final File prototype = new File(precompile);
            mojo.getLog().debug( "Checking for existence of precompilation prototype: " + prototype );
 
            if (prototype.exists())
@@ -641,7 +641,7 @@ public abstract class Compiler
     protected abstract String getLanguage();
 
     public final void copyIncludeFiles( MavenProject mavenProject, File targetDirectory )
-        throws IOException
+        throws IOException, MojoExecutionException, MojoFailureException
     {
         for ( Iterator i = getIncludePaths( "dummy" ).iterator(); i.hasNext(); )
         {

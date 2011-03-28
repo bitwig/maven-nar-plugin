@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.tools.ant.Project;
 
 /**
@@ -135,9 +136,11 @@ public abstract class AbstractCompileMojo
     *
     * @parameter expression=""
     */
-    private String preCompile;
+    private String precompile;
 
     final public static String PRECOMPILE_PROPERTY_NAME = "precompile";
+
+    private File objDir;
 
     private NarInfo narInfo;
 
@@ -274,7 +277,19 @@ public abstract class AbstractCompileMojo
 
     public final String getPreCompilationPrototype()
     {
-        return preCompile;
+        return precompile;
+    }
+
+    public File getObjDir() throws MojoExecutionException, MojoFailureException
+    {
+        if (objDir == null)
+        {
+            objDir = new File(getTargetDirectory(), "obj");
+            objDir = new File(objDir, getAOL().toString());
+            objDir.mkdirs();
+        }
+
+        return objDir;
     }
 
     protected final NarInfo getNarInfo()
